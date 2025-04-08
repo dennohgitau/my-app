@@ -1,0 +1,88 @@
+
+{
+    "pipeline": {
+      "name": "my-app-pipeline",
+      "roleArn": "arn:aws:iam::152789931419:role/AWSCodePipelineServiceRole",
+      "artifactStore": {
+        "type": "S3",
+        "location": "my-app-artifacts"
+      },
+      "stages": [
+        {
+          "name": "Source",
+          "actions": [
+            {
+              "name": "Source",
+              "actionTypeId": {
+                "category": "Source",
+                "owner": "AWS",
+                "provider": "CodeStarSourceConnection",
+                "version": "1"
+              },
+              "configuration": {
+                "ConnectionArn": "arn:aws:codestar-connections:us-east-1:152789931419:connection/8f87c04c-f17a-40cf-8563-50ba95668a90",
+                "FullRepositoryId": "dennohgitau/my-app",
+                "BranchName": "master"
+              },
+              "outputArtifacts": [
+                {
+                  "name": "SourceCode"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Build",
+          "actions": [
+            {
+              "name": "BuildAction",
+              "actionTypeId": {
+                "category": "Build",
+                "owner": "AWS",
+                "provider": "CodeBuild",
+                "version": "1"
+              },
+              "configuration": {
+                "ProjectName": "my-app-build"
+              },
+              "inputArtifacts": [
+                {
+                  "name": "SourceCode"
+                }
+              ],
+              "outputArtifacts": [
+                {
+                  "name": "BuildOutput"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Deploy",
+          "actions": [
+            {
+              "name": "DeployAction",
+              "actionTypeId": {
+                "category": "Deploy",
+                "owner": "AWS",
+                "provider": "CodeDeploy",
+                "version": "1"
+              },
+              "configuration": {
+                "ApplicationName": "my-app",
+                "DeploymentGroupName": "my-app-production"
+              },
+              "inputArtifacts": [
+                {
+                  "name": "BuildOutput"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+  
